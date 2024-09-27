@@ -16,10 +16,10 @@ class Player(models.Model):
 
 class Team(models.Model):
     id = models.IntegerField(primary_key=True, unique=True) 
+    owner = models.CharField(max_length=255)  # Link to Player table
     team_name = models.CharField(max_length=255)
     balance = models.IntegerField(default=1000)
-    team_logo = models.CharField(max_length=50)
-    
+ 
     def __str__(self):
         return self.team_name
     
@@ -40,6 +40,9 @@ class TeamPlayer(models.Model):
         if not self.pk:  # Only if this is a new entry (not updating an existing one)
             self.player.status = True
             self.player.save()
+
+            self.team.balance -= self.price
+            self.team.save()
 
         # Call the original save method
         super().save(*args, **kwargs)

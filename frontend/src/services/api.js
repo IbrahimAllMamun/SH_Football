@@ -12,6 +12,7 @@ export const fetchPlayerBySL = async (sl) => {
 };
 
 
+
 export const fetchPlayers = async () => {
   try {
     const response = await fetch(PLAYER_URL);
@@ -29,7 +30,7 @@ export const fetchPlayers = async () => {
 };
 const TEAM_URL = 'http://127.0.0.1:8000/api/teams/';
 
-export const fetchTeam = async () => {
+export const fetchTeams = async () => {
   try {
     const response = await fetch(TEAM_URL);
     
@@ -44,3 +45,5 @@ export const fetchTeam = async () => {
     throw error; // Rethrow the error to handle it in the calling function
   }
 };
+
+

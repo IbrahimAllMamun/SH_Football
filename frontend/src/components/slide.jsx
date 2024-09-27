@@ -1,8 +1,8 @@
+import PropTypes from 'prop-types';
 import { useState, useEffect, useRef } from 'react';
 import TeamCardForm from '@/components/teamCardForm';
 import ACS from '@/components/acs/acs';
 import NavigationCard from './NavigationCard'; // Adjust the import path accordingly
-import PropTypes from 'prop-types';
 import { fetchPlayerBySL } from '@/services/api'; // Function to fetch player data by SL
 import { nextPlayer, prevPlayer } from '@/utils/playerNavigation'; // Import the navigation functions
 
@@ -33,14 +33,21 @@ const SlideshowWithField = ({ initialSL, totalPlayers }) => {
   // Keypress handler for Ctrl+Space, Ctrl+Alt+Space, Left and Right arrows
   useEffect(() => {
     const handleKeyPress = (event) => {
-      // Check if both Ctrl and Alt are pressed and then toggle navigation card
+      // Log the keypress for debugging
+      console.log(`Key pressed: ${event.key}, Code: ${event.code}, Ctrl: ${event.ctrlKey}, Alt: ${event.altKey}`);
+  
+      // Check if both Ctrl and Alt are pressed and then toggle the navigation card
       if (event.ctrlKey && event.altKey && event.code === 'Space') {
-        setIsNavVisible((prev) => !prev); // Handle navigation card
+        event.preventDefault(); // Prevent any default browser actions (e.g., browser shortcuts)
+        setIsNavVisible(prev => !prev); // Toggle navigation card visibility
         setIsSearchVisible(false); // Hide search when nav is visible
         setIsModalVisible(false); // Ensure modal is hidden
+        console.log("pressed")
+        console.log(isNavVisible)
       }
       // Check if only Ctrl is pressed to toggle search modal
       else if (event.ctrlKey && event.code === 'Space') {
+        event.preventDefault(); // Prevent default action
         setIsNavVisible(false);
         setIsSearchVisible((prev) => !prev); // Toggle search form visibility
         setIsModalVisible((prev) => !prev); // Show or hide modal
@@ -54,26 +61,33 @@ const SlideshowWithField = ({ initialSL, totalPlayers }) => {
       }
       // Handle Left arrow to go to the previous player
       else if (event.code === 'ArrowLeft') {
+        event.preventDefault(); // Prevent any default action
         prevPlayer(currentSL, setCurrentSL, totalPlayers);
       }
       // Handle Right arrow to go to the next player
       else if (event.code === 'ArrowRight') {
+        event.preventDefault(); // Prevent any default action
         nextPlayer(currentSL, setCurrentSL, totalPlayers);
       }
       // Handle Enter key to fetch player data
       else if (event.code === 'Enter') {
+        event.preventDefault(); // Prevent default action on Enter
         const newSL = parseInt(inputValue, 10);
         if (!isNaN(newSL) && newSL > 0) {
           setCurrentSL(newSL); // Update the SL number and fetch data
+          setInputValue('');
+          setIsModalVisible(false);
+          setIsSearchVisible(false);
         }
       }
     };
-
+  
     window.addEventListener('keydown', handleKeyPress);
+  
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [inputValue, isSearchVisible, currentSL, totalPlayers]);
+  }, [inputValue, isSearchVisible, isNavVisible, currentSL, totalPlayers]);
 
   // Focus on the input field when the search bar appears
   useEffect(() => {
@@ -103,6 +117,8 @@ const SlideshowWithField = ({ initialSL, totalPlayers }) => {
         </h1>
       </div>
 
+      
+
       {/* Main Content */}
       <div className="flex flex-grow">
         <div className="flex-none w-[35rem] flex items-center pl-20">
@@ -114,12 +130,8 @@ const SlideshowWithField = ({ initialSL, totalPlayers }) => {
               <h2 className="text-5xl font-semibold mb-4 mt-3">
                 {player.name}
               </h2>
-              <p className="text-4xl font-medium my-4">
-                {player.department}
-              </p>
-              <p className="text-4xl font-medium my-4">
-                {player.session}
-              </p>
+              <p className="text-4xl font-medium my-4">{player.department}</p>
+              <p className="text-4xl font-medium my-4">{player.session}</p>
             </div>
           )}
         </div>
@@ -137,7 +149,7 @@ const SlideshowWithField = ({ initialSL, totalPlayers }) => {
 
         {/* Right Column */}
         <div className="flex-none w-[35rem] flex items-center justify-center p-4">
-          <TeamCardForm />
+          <TeamCardForm player={player} />
         </div>
       </div>
 
@@ -192,9 +204,8 @@ const SlideshowWithField = ({ initialSL, totalPlayers }) => {
       )}
 
       {/* Navigation Card */}
-      {isNavVisible && (
-        <NavigationCard setIsNavVisible={setIsNavVisible} />
-      )}
+      <NavigationCard isVisible={isNavVisible} setIsVisible={setIsNavVisible} />
+
     </div>
   );
 };

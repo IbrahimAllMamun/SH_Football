@@ -11,7 +11,6 @@ function App() {
       setLoading(true); // Set loading to true before fetching
       try {
         const result = await fetchPlayers();
-        console.log('Fetched players:', result);
         setPlayers(result);
       } catch (error) {
         console.error('Error fetching players:', error);
@@ -32,7 +31,7 @@ function App() {
     <div>
       <SlideshowWithField 
         initialSL={initialSL} 
-        totalPlayers={170}
+        totalPlayers={players.length}
       />
       {/* Add other components or routes as needed */}
     </div>

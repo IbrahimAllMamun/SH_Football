@@ -10,7 +10,7 @@ class PlayerAdmin(admin.ModelAdmin):
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('id','team_name','balance','team_logo')
+    list_display = ('id','team_name','owner', 'balance')
     search_fields = ('id','team_name')
     ordering = ('id',)
 

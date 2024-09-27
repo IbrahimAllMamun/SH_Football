@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-export function ACS({ primary, secondary, height }) {
+export function ACS({height=10}) {
   return (
     <svg
       className="icon"
@@ -9,7 +9,7 @@ export function ACS({ primary, secondary, height }) {
     >
       <defs>
         <style>
-          {`.cls-1{fill:${secondary};}.cls-2{fill:${primary};}.icon{height: ${height}px;}`}
+          {`.cls-1{fill:${'#101010'};}.cls-2{fill:${'#3a84f1'};}.icon{height: ${height}px;}`}
         </style>
       </defs>
       <g id="Layer_2" data-name="Layer 2">
@@ -32,15 +32,8 @@ export function ACS({ primary, secondary, height }) {
   );
 }
 
-ACS.defaultProps = {
-  primary: '#3a84f1',
-  secondary: '#101010',
-  height: 10,
-};
 
 ACS.propTypes = {
-  primary: PropTypes.oneOf(['#3a94d1']),
-  secondary: PropTypes.oneOf(['#292a34']),
   height: PropTypes.number.isRequired,
 };
 

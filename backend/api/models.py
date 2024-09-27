@@ -28,9 +28,18 @@ class TeamPlayer(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)  # Link to Team table
     player = models.ForeignKey(Player, on_delete=models.CASCADE)  # Link to Player table
     price = models.IntegerField()
-    
+
     class Meta:
         unique_together = ('player', 'team')
 
     def __str__(self):
         return f"{self.player.SL} - {self.team.team_name}"
+    
+    def save(self, *args, **kwargs):
+        # Set player's status to True when added to the team
+        if not self.pk:  # Only if this is a new entry (not updating an existing one)
+            self.player.status = True
+            self.player.save()
+
+        # Call the original save method
+        super().save(*args, **kwargs)

@@ -1,32 +1,71 @@
-// src/components/slide.jsx
 import { useState, useEffect, useRef } from 'react';
 import TeamCardForm from '@/components/teamCardForm';
 import ACS from '@/components/acs/acs';
-import { nextPlayer, prevPlayer } from '@/utils/playerNavigation'; // Adjust the import path accordingly
-import NavigationCard from './NavigationCard'; // Import NavigationCard
+import NavigationCard from './NavigationCard'; // Adjust the import path accordingly
 import PropTypes from 'prop-types';
+import { fetchPlayerBySL } from '@/services/api'; // Function to fetch player data by SL
+import { nextPlayer, prevPlayer } from '@/utils/playerNavigation'; // Import the navigation functions
 
-
-const SlideshowWithField = ({ players }) => {
-  const [index, setIndex] = useState(0);
+const SlideshowWithField = ({ initialSL, totalPlayers }) => {
+  const [player, setPlayer] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isNavVisible, setIsNavVisible] = useState(false); // State for navigation card
+  const [isNavVisible, setIsNavVisible] = useState(false);
+  const [currentSL, setCurrentSL] = useState(initialSL); // Add SL state
   const inputRef = useRef(null);
 
-  // Keypress handler for Ctrl+Space and Ctrl+Alt+Space
+  // Function to fetch player data by SL
+  const getPlayerData = async (sl) => {
+    try {
+      const result = await fetchPlayerBySL(sl);
+      setPlayer(result);
+    } catch (error) {
+      console.error('Error fetching player data:', error);
+    }
+  };
+
+  // Fetch player data whenever the SL changes
+  useEffect(() => {
+    getPlayerData(currentSL);
+  }, [currentSL]);
+
+  // Keypress handler for Ctrl+Space, Ctrl+Alt+Space, Left and Right arrows
   useEffect(() => {
     const handleKeyPress = (event) => {
+      // Check if both Ctrl and Alt are pressed and then toggle navigation card
       if (event.ctrlKey && event.altKey && event.code === 'Space') {
-        setIsNavVisible((prev) => !prev); // Toggle navigation card visibility
-      } else if (event.ctrlKey && event.code === 'Space') {
-        setIsSearchVisible((prev) => !prev);
-        setTimeout(() => setIsModalVisible((prev) => !prev), 50);
-      } else if (event.code === 'ArrowRight') {
-        nextPlayer(index, setIndex, players.length);
-      } else if (event.code === 'ArrowLeft') {
-        prevPlayer(index, setIndex, players.length);
+        setIsNavVisible((prev) => !prev); // Handle navigation card
+        setIsSearchVisible(false); // Hide search when nav is visible
+        setIsModalVisible(false); // Ensure modal is hidden
+      }
+      // Check if only Ctrl is pressed to toggle search modal
+      else if (event.ctrlKey && event.code === 'Space') {
+        setIsNavVisible(false);
+        setIsSearchVisible((prev) => !prev); // Toggle search form visibility
+        setIsModalVisible((prev) => !prev); // Show or hide modal
+        if (!isSearchVisible) {
+          setTimeout(() => {
+            if (inputRef.current) {
+              inputRef.current.focus(); // Focus on the input field when modal opens
+            }
+          }, 50);
+        }
+      }
+      // Handle Left arrow to go to the previous player
+      else if (event.code === 'ArrowLeft') {
+        prevPlayer(currentSL, setCurrentSL, totalPlayers);
+      }
+      // Handle Right arrow to go to the next player
+      else if (event.code === 'ArrowRight') {
+        nextPlayer(currentSL, setCurrentSL, totalPlayers);
+      }
+      // Handle Enter key to fetch player data
+      else if (event.code === 'Enter') {
+        const newSL = parseInt(inputValue, 10);
+        if (!isNaN(newSL) && newSL > 0) {
+          setCurrentSL(newSL); // Update the SL number and fetch data
+        }
       }
     };
 
@@ -34,7 +73,7 @@ const SlideshowWithField = ({ players }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [index, players.length]);
+  }, [inputValue, isSearchVisible, currentSL, totalPlayers]);
 
   // Focus on the input field when the search bar appears
   useEffect(() => {
@@ -43,11 +82,12 @@ const SlideshowWithField = ({ players }) => {
     }
   }, [isSearchVisible, isModalVisible]);
 
+  // Handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
-    const newIndex = parseInt(inputValue, 10) - 1;
-    if (newIndex >= 0 && newIndex < players.length) {
-      setIndex(newIndex);
+    const newSL = parseInt(inputValue, 10);
+    if (!isNaN(newSL) && newSL > 0) {
+      setCurrentSL(newSL); // Update the SL number and fetch data
     }
     setInputValue('');
     setIsModalVisible(false);
@@ -66,29 +106,33 @@ const SlideshowWithField = ({ players }) => {
       {/* Main Content */}
       <div className="flex flex-grow">
         <div className="flex-none w-[35rem] flex items-center pl-20">
-          <div className="font-fredoka text-white">
-            <span className="bg-green-800 text-white border-2 text-5xl font-semibold me-2 px-4 py-1 rounded-full">
-              {players[index].playingPosition}
-            </span>
-            <h2 className="text-5xl font-semibold mb-4 mt-3">
-              {players[index].name}
-            </h2>
-            <p className="text-4xl font-medium my-4">
-              {players[index].department}
-            </p>
-            <p className="text-4xl font-medium my-4">
-              {players[index].session}
-            </p>
-          </div>
+          {player && (
+            <div className="font-fredoka text-white">
+              <span className="bg-green-800 text-white border-2 text-5xl font-semibold me-2 px-4 py-1 rounded-full">
+                {player.playingPosition}
+              </span>
+              <h2 className="text-5xl font-semibold mb-4 mt-3">
+                {player.name}
+              </h2>
+              <p className="text-4xl font-medium my-4">
+                {player.department}
+              </p>
+              <p className="text-4xl font-medium my-4">
+                {player.session}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Player Image */}
-        <div className="flex-[2] flex flex-col items-center justify-center px-4 ">
-          <img
-            src={players[index].image}
-            alt={players[index].name}
-            className="w-[80%] border-8 border-white aspect-[4/4] drop-shadow-3xl object-cover rounded-[10000px] mb-4 transition-opacity duration-500 ease-in-out opacity-100"
-          />
+        <div className="flex-[2] flex flex-col items-center justify-center px-4">
+          {player && (
+            <img
+              src={player.image}
+              alt={player.name}
+              className="w-[80%] border-8 border-white aspect-[4/4] drop-shadow-3xl object-cover rounded-[10000px] mb-4 transition-opacity duration-500 ease-in-out opacity-100"
+            />
+          )}
         </div>
 
         {/* Right Column */}
@@ -99,9 +143,11 @@ const SlideshowWithField = ({ players }) => {
 
       <div className="flex justify-between items-center w-full p-10 pt-0">
         <div className="border-[6px] w-20 h-20 py-4 border-white aspect-[4/4] rounded-[100px] justify-center bg-green-700">
-          <h1 className="text-white font-extrabold text-center font-kanit text-4xl">
-            {players[index].SL}
-          </h1>
+          {player && (
+            <h1 className="text-white font-extrabold text-center font-kanit text-4xl">
+              {player.SL}
+            </h1>
+          )}
         </div>
 
         <div className="relative">
@@ -128,13 +174,12 @@ const SlideshowWithField = ({ players }) => {
         >
           <form
             onSubmit={handleSubmit}
-            className={` p-6 rounded shadow-lg transform transition-all duration-300 
+            className={`p-6 rounded shadow-lg transform transition-all duration-300 
             ${isModalVisible ? 'scale-100' : 'scale-90'}`}
           >
             <input
               type="number"
               min="1"
-              max={players.length}
               className="p-2 border border-gray-400 rounded text-black w-[500px] h-14"
               placeholder="Enter player number..."
               value={inputValue}
@@ -147,23 +192,16 @@ const SlideshowWithField = ({ players }) => {
       )}
 
       {/* Navigation Card */}
-      <NavigationCard isVisible={isNavVisible} setIsVisible={setIsNavVisible} />
+      {isNavVisible && (
+        <NavigationCard setIsNavVisible={setIsNavVisible} />
+      )}
     </div>
   );
 };
 
 SlideshowWithField.propTypes = {
-  players: PropTypes.arrayOf(
-    PropTypes.shape({
-      SL: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      department: PropTypes.string.isRequired,
-      session: PropTypes.string.isRequired,
-      playingPosition: PropTypes.string.isRequired,
-      image: PropTypes.string.isRequired,
-      status: PropTypes.bool.isRequired,
-    })
-  ).isRequired,
+  initialSL: PropTypes.number.isRequired,
+  totalPlayers: PropTypes.number.isRequired,
 };
 
 export default SlideshowWithField;

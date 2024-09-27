@@ -1,5 +1,17 @@
 const PLAYER_URL = 'http://127.0.0.1:8000/api/players/';
 
+// services/api.js
+
+
+export const fetchPlayerBySL = async (sl) => {
+  const response = await fetch(`http://127.0.0.1:8000/api/players?SL=${sl}`); // Adjust the API endpoint as necessary
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
+
+
 export const fetchPlayers = async () => {
   try {
     const response = await fetch(PLAYER_URL);

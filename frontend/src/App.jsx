@@ -1,7 +1,6 @@
 import SlideshowWithField from './components/slide';
 import { useState, useEffect } from 'react';
-import { fetchPlayers } from './services/api'; // Adjust the import path as necessary
-// import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { fetchPlayers } from '@/services/api'; // Adjust the import path as necessary
 
 function App() {
   const [players, setPlayers] = useState([]);
@@ -15,23 +14,28 @@ function App() {
         console.log('Fetched players:', result);
         setPlayers(result);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching players:', error);
       } finally {
         setLoading(false); // Set loading to false after fetching
       }
     };
 
-    loadPlayers(); // Call the async function
+    loadPlayers();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>; // Show loading state
-  }
+  if (loading) return <div>Loading...</div>; // Show a loading message
+
+  // For example, start with the first player
+  const initialSL = players.length > 0 ? players[0].SL : null;
 
   return (
-    <>
-      <SlideshowWithField players={players} />
-    </>
+    <div>
+      <SlideshowWithField 
+        initialSL={initialSL} 
+        totalPlayers={170}
+      />
+      {/* Add other components or routes as needed */}
+    </div>
   );
 }
 

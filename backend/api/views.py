@@ -5,27 +5,38 @@ from .serializer import PlayerSerializer, TeamSerializer, TeamPlayerSerializer
 from .models import Player, Team, TeamPlayer
 
 # Player
+
 @api_view(['GET'])
 def get_players(request):
-    players = Player.objects.all() 
-    if not players.exists():
-        return Response([], status=status.HTTP_200_OK)  
-    
-    serialized_data = PlayerSerializer(players, many=True)
-    return Response(serialized_data.data, status=status.HTTP_200_OK)  
+    # Check if the 'SL' query parameter is provided
+    sl = request.query_params.get('SL', None)  # Use 'SL' or any other field you want to filter by
 
+    if sl is not None:
+        try:
+            player = Player.objects.get(SL=sl)  # Retrieve a single player by SL
+            serialized_data = PlayerSerializer(player)
+            return Response(serialized_data.data, status=status.HTTP_200_OK)
+        except Player.DoesNotExist:
+            return Response({'detail': 'Player not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    # If no SL is provided, return all players
+    players = Player.objects.all()
+    if not players.exists():
+        return Response([], status=status.HTTP_200_OK)
+
+    serialized_data = PlayerSerializer(players, many=True)
+    return Response(serialized_data.data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def create_players(request):
-    data = request.data  
-    serilizer = PlayerSerializer(data=data) 
-    
-    if serilizer.is_valid():
-        serilizer.save()
-        return Response(serilizer.data, status=status.HTTP_201_CREATED)
-    else:
-        return Response(serilizer.errors, status=status.HTTP_400_BAD_REQUEST)
+    data = request.data
+    serializer = PlayerSerializer(data=data)
 
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # Team
 @api_view(['GET'])
 def get_teams(request):

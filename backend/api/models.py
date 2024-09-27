@@ -12,7 +12,7 @@ class Player(models.Model):
 
     def __str__(self):
         return f'{self.SL}. {self.name}'
-
+    
 
 class Team(models.Model):
     id = models.IntegerField(primary_key=True, unique=True) 

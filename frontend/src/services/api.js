@@ -4,7 +4,7 @@ const PLAYER_URL = 'http://127.0.0.1:8000/api/players/';
 
 
 export const fetchPlayerBySL = async (sl) => {
-  const response = await fetch(`http://127.0.0.1:8000/api/players?SL=${sl}`); // Adjust the API endpoint as necessary
+  const response = await fetch(`http://127.0.0.1:8000/api/players/${sl}`); // Adjust the API endpoint as necessary
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
@@ -45,5 +45,18 @@ export const fetchTeams = async () => {
     throw error; // Rethrow the error to handle it in the calling function
   }
 };
-
-
+export const fetchTeamPlayer = async (id) => {
+  try {
+    const response = await fetch(`http://127.0.0.1:8000/api/team-players/${id}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    return result; // Return the fetched players
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error; // Rethrow the error to handle it in the calling function
+  }
+};

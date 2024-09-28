@@ -1,6 +1,6 @@
 // src/components/NavigationCard.jsx
-import  { useEffect, useRef } from 'react';
-// import { Link } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 const NavigationCard = ({ isVisible, setIsVisible }) => {
@@ -20,6 +20,11 @@ const NavigationCard = ({ isVisible, setIsVisible }) => {
     };
   }, [setIsVisible]);
 
+  // Function to handle link click
+  const handleLinkClick = () => {
+    setIsVisible(false); // Close the navigation card
+  };
+
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-lg z-50 
@@ -27,15 +32,25 @@ const NavigationCard = ({ isVisible, setIsVisible }) => {
     >
       <div
         ref={cardRef}
-        className={`p-6 rounded shadow-lg transform transition-all duration-300 
-        ${isVisible ? 'scale-100' : 'scale-90'}`}
+        className={``}
       >
-        <h2 className="text-white text-3xl mb-4">Navigation</h2>
-        <div className="flex flex-col items-center">
-            hello
-          {/* <Link to="/component1" className="text-white text-lg mb-2">Component 1</Link>
-          <Link to="/component2" className="text-white text-lg mb-2">Component 2</Link>
-          <Link to="/component3" className="text-white text-lg mb-2">Component 3</Link> */}
+        <div className="flex font-kanit items-center">
+          <Link
+            to="/"
+            className={`text-white text-lg mb-2 p-6 bg-green-400/70 rounded-3xl shadow-lg transform transition-all duration-300 
+        ${isVisible ? 'scale-100' : 'scale-90'}`}
+            onClick={handleLinkClick}
+          >
+            Component 1
+          </Link>
+          <Link
+            to="/teams"
+            className="text-white text-lg mb-2"
+            onClick={handleLinkClick}
+          >
+            Component 2
+          </Link>
+          {/* Add more links as needed */}
         </div>
       </div>
     </div>
@@ -43,8 +58,8 @@ const NavigationCard = ({ isVisible, setIsVisible }) => {
 };
 
 NavigationCard.propTypes = {
-    isVisible: PropTypes.bool.isRequired,
-    setIsVisible: PropTypes.func.isRequired,
-  };
+  isVisible: PropTypes.bool.isRequired,
+  setIsVisible: PropTypes.func.isRequired,
+};
 
 export default NavigationCard;

@@ -12,7 +12,20 @@ class TeamSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TeamPlayerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TeamPlayer  
-        fields = '__all__'
+    # Use PrimaryKeyRelatedField for player and team to accept IDs
+    player = serializers.PrimaryKeyRelatedField(queryset=Player.objects.all())
+    team = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
 
+    class Meta:
+        model = TeamPlayer
+        fields = ['team', 'player', 'price']
+
+
+class TeamPlayerSerializer2(serializers.ModelSerializer):
+    # Embed PlayerSerializer to include detailed player information
+    player = PlayerSerializer()
+    team = TeamSerializer()
+
+    class Meta:
+        model = TeamPlayer
+        fields = ['team', 'player', 'price']

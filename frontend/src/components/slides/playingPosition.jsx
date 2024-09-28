@@ -1,6 +1,5 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
-// Updated positions for players based on the provided football field layout
 const fieldPositions = {
   GK: { top: '90%', left: '50%' },
   LB: { top: '74%', left: '30%' },
@@ -110,5 +109,12 @@ const FootballField = ({ playingPosition }) => {
     </div>
   );
 };
+
+
+
+FootballField.propTypes = {
+  playingPosition: PropTypes.string.isRequired, // Validate that playingPosition is a required string
+};
+
 
 export default FootballField;

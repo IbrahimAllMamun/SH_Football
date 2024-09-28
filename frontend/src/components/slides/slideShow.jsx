@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect, useRef } from 'react';
-import TeamCardForm from '@/components/teamCardForm';
+import TeamCardForm from '@/components/slides/teamInfo';
 import ACS from '@/components/acs/acs';
-import NavigationCard from './NavigationCard'; // Adjust the import path accordingly
+import NavigationCard from '../navigationCard'; // Adjust the import path accordingly
 import { fetchPlayerBySL } from '@/services/api'; // Function to fetch player data by SL
 import { nextPlayer, prevPlayer } from '@/utils/playerNavigation'; // Import the navigation functions
 
-const SlideshowWithField = ({ initialSL, totalPlayers }) => {
+const Slideshow = ({ initialSL, totalPlayers }) => {
   const [player, setPlayer] = useState(null);
   const [inputValue, setInputValue] = useState('');
   const [isSearchVisible, setIsSearchVisible] = useState(false);
@@ -34,16 +34,18 @@ const SlideshowWithField = ({ initialSL, totalPlayers }) => {
   useEffect(() => {
     const handleKeyPress = (event) => {
       // Log the keypress for debugging
-      console.log(`Key pressed: ${event.key}, Code: ${event.code}, Ctrl: ${event.ctrlKey}, Alt: ${event.altKey}`);
-  
+      console.log(
+        `Key pressed: ${event.key}, Code: ${event.code}, Ctrl: ${event.ctrlKey}, Alt: ${event.altKey}`
+      );
+
       // Check if both Ctrl and Alt are pressed and then toggle the navigation card
       if (event.ctrlKey && event.altKey && event.code === 'Space') {
         event.preventDefault(); // Prevent any default browser actions (e.g., browser shortcuts)
-        setIsNavVisible(prev => !prev); // Toggle navigation card visibility
+        setIsNavVisible((prev) => !prev); // Toggle navigation card visibility
         setIsSearchVisible(false); // Hide search when nav is visible
         setIsModalVisible(false); // Ensure modal is hidden
-        console.log("pressed")
-        console.log(isNavVisible)
+        console.log('pressed');
+        console.log(isNavVisible);
       }
       // Check if only Ctrl is pressed to toggle search modal
       else if (event.ctrlKey && event.code === 'Space') {
@@ -81,9 +83,9 @@ const SlideshowWithField = ({ initialSL, totalPlayers }) => {
         }
       }
     };
-  
+
     window.addEventListener('keydown', handleKeyPress);
-  
+
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
     };
@@ -109,15 +111,13 @@ const SlideshowWithField = ({ initialSL, totalPlayers }) => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[url('../public/bg.jpg')] bg-cover bg-bottom">
+    <div className="flex flex-col">
       {/* Player Number Display */}
       <div className="w-full text-center font-kanit font-outline-1 text-green-500 text-[4rem] p-5 pb-0">
         <h1 className="drop-shadow-[0_0px_10px_rgba(0,0,0,1)]">
           Shahidullah Hall Football Fiesta 2024
         </h1>
       </div>
-
-      
 
       {/* Main Content */}
       <div className="flex flex-grow">
@@ -204,15 +204,13 @@ const SlideshowWithField = ({ initialSL, totalPlayers }) => {
       )}
 
       {/* Navigation Card */}
-      <NavigationCard isVisible={isNavVisible} setIsVisible={setIsNavVisible} />
-
     </div>
   );
 };
 
-SlideshowWithField.propTypes = {
+Slideshow.propTypes = {
   initialSL: PropTypes.number.isRequired,
   totalPlayers: PropTypes.number.isRequired,
 };
 
-export default SlideshowWithField;
+export default Slideshow;

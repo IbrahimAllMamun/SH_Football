@@ -2,6 +2,8 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faImage, faUsers } from '@fortawesome/free-solid-svg-icons'; // Use faImage instead of faSlideshow
 
 const NavigationCard = ({ isVisible, setIsVisible }) => {
   const cardRef = useRef(null);
@@ -32,25 +34,34 @@ const NavigationCard = ({ isVisible, setIsVisible }) => {
     >
       <div
         ref={cardRef}
-        className={``}
+        className="flex font-kanit text-2xl text-white flex-col items-center"
       >
-        <div className="flex font-kanit items-center">
+        <div className="flex items-center">
           <Link
             to="/"
-            className={`text-white text-lg mb-2 p-6 bg-green-400/70 rounded-3xl shadow-lg transform transition-all duration-300 
-        ${isVisible ? 'scale-100' : 'scale-90'}`}
+            
             onClick={handleLinkClick}
           >
-            Component 1
+          <div className={`flex justify-center items-center hover:bg-orange-700 hover:scale-110 w-64 h-20 m-5 p-4 bg-green-700 rounded-3xl shadow-lg transform transition-all duration-300 
+            ${isVisible ? 'scale-100' : 'scale-90'}`}>
+            <FontAwesomeIcon icon={faImage} className="mr-2" /> {/* Updated icon */}
+            Slideshow
+          </div>
           </Link>
+
           <Link
-            to="/teams"
-            className="text-white text-lg mb-2"
-            onClick={handleLinkClick}
-          >
-            Component 2
+          to="/teams"
+          
+          onClick={handleLinkClick}
+        >
+            <div className={`flex justify-center hover:bg-orange-700 hover:scale-110 items-center w-64 h-20 m-5 p-4 bg-green-700 rounded-3xl shadow-lg transform transition-all duration-300 
+            ${isVisible ? 'scale-100' : 'scale-90'}`}>
+            <FontAwesomeIcon icon={faUsers} className="mr-2" />
+            Teams
+            </div>
           </Link>
-          {/* Add more links as needed */}
+
+          {/* Add more links with icons as needed */}
         </div>
       </div>
     </div>

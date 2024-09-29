@@ -43,12 +43,12 @@ const TeamCard = ({ team, onClick, isExpanded }) => {
             className={`w-28 h-28 mb`}
           />
           <div className={`font-kanit mb-5 ${isExpanded ? 'text-center' : 'm-5' }`}>
-            <h2 className="text-2xl font-bold mb-2">{team.team_name}</h2>
-            <p className="text-xl text-gray-600">Players: {player_number}</p>
-            <p className="text-xl text-gray-600">Max Bid: {team.balance - (12-player_number-1)*20}</p>
+            <h2 className="text-3xl font-bold mb-2">{team.team_name}</h2>
+            <p className="text-2xl text-gray-600">Players: {player_number}</p>
+            <p className="text-2xl text-gray-600">Next Bid Max : {team.balance - (12-player_number-1)*20}</p>
           </div>
         </div>
-        <div className={`${isExpanded ? 'mx-20' : 'm-4'}`}>
+        <div className={`${isExpanded ? 'mx-20 mt-10' : 'm-4'}`}>
 
         <ProgressBar progress={team.balance} />
         </div>

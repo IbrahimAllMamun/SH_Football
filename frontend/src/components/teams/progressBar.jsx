@@ -8,7 +8,7 @@ const ProgressBar = ({ progress }) => {
   const percentage = (clampedProgress / 1000) * 100;
 
   return (
-    <div className="relative w-full bg-gray-200 rounded-full h-3 mt-5">
+    <div className="relative w-full bg-gray-200 rounded-full h-3 mt-4">
       <div
         className="flex justify-end items-center bg-green-600 h-3 border-2 rounded-full transition-all duration-300 ease-in-out"
         style={{ width: `${percentage}%` }}
@@ -17,7 +17,7 @@ const ProgressBar = ({ progress }) => {
       </div>
       {/* Current progress value */}
       <div
-        className="absolute text-lg text-gray-700 bottom-4 font-kanit  transform -translate-y-6"
+        className="absolute text-2xl text-gray-700 bottom-4 font-kanit  transform -translate-y-6"
         style={{ left: `${percentage}%`, transform: `translateX(-50%)` }}  // Ensure it stays centered
       >
         {`$${clampedProgress}`}

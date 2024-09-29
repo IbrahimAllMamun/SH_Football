@@ -111,7 +111,7 @@ const Slideshow = ({ initialSL, totalPlayers }) => {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full">
       {/* Player Number Display */}
       <div className="w-full text-center font-kanit font-outline-1 text-green-500 text-[4rem] p-5 pb-0">
         <h1 className="drop-shadow-[0_0px_10px_rgba(0,0,0,1)]">

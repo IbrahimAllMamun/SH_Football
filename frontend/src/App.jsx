@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { fetchPlayers } from '@/services/api';
 import TeamGrid from './components/teams/teamGrid';
 import Slideshow from './components/slides/slideShow';
-import NavigationCard from '@/components/NavigationCard'; // Adjust the import path accordingly
+import NavigationCard from '@/components/navigationCard'; // Adjust the import path accordingly
 
 function App() {
   const [players, setPlayers] = useState([]);

@@ -66,11 +66,12 @@ const TeamCardForm = ({ player }) => {
 
   return (
     <div className="max-w-md mx-auto p-4 shadow-lg rounded-lg text-white bg-gray-600/30 font-fredoka backdrop-blur-sm">
-      <form onSubmit={handleSubmit}>
+      <form id='playerForm' onSubmit={handleSubmit}>
         {/* Dropdown */}
         <div className="mb-4">
-          <label className="block text-3xl font-medium mb-1">Select Team</label>
+          <label htmlFor='teamName' className="block text-3xl font-medium mb-1">Select Team</label>
           <select
+            id = 'teamName'
             value={selectedTeam ? selectedTeam.id : ''}
             onChange={(e) => {
               const selectedTeamId = e.target.value;
@@ -94,6 +95,7 @@ const TeamCardForm = ({ player }) => {
         {/* Text input and submit button side by side */}
         <div className="flex items-center gap-2">
           <input
+            id = 'playerPrice'
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
@@ -124,7 +126,9 @@ const TeamCardForm = ({ player }) => {
 };
 
 TeamCardForm.propTypes = {
-  player: PropTypes.object.isRequired,
+  player: PropTypes.shape({
+    SL: PropTypes.number.isRequired,
+    status: PropTypes.bool,
+  }),
 };
-
 export default TeamCardForm;

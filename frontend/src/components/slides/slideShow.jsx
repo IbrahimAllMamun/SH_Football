@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import { useState, useEffect, useRef } from 'react';
 import TeamCardForm from '@/components/slides/teamInfo';
 import ACS from '@/components/acs/acs';
-import NavigationCard from '../navigationCard'; // Adjust the import path accordingly
 import { fetchPlayerBySL } from '@/services/api'; // Function to fetch player data by SL
 import { nextPlayer, prevPlayer } from '@/utils/playerNavigation'; // Import the navigation functions
 

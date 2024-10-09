@@ -8,6 +8,7 @@ class Player(models.Model):
     playingPosition = models.CharField(max_length=5)
     image = models.CharField(max_length=50)  # Store image uploads
     status = models.BooleanField(default=False)
+    randomized = models.BooleanField(default=False)
 
 
     def __str__(self):

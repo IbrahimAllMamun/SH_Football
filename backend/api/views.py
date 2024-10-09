@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from .serializer import PlayerSerializer, TeamSerializer, TeamPlayerSerializer, TeamPlayerSerializer2
 from .models import Player, Team, TeamPlayer
 from rest_framework import generics
-
+import random
 # Player
 
 @api_view(['GET'])
@@ -23,6 +23,29 @@ def get_players(request, pk=None):
 
     serialized_data = PlayerSerializer(players, many=True)
     return Response(serialized_data.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def random_players(request):
+    while True:
+        # Get all players who are not randomized and have a status of False
+        players = Player.objects.filter(status=False, randomized=False)
+
+        if not players.exists():
+            # If no available players, reset all players' randomized field to False
+            Player.objects.all().update(randomized=False)
+            continue
+
+        # Select a random player from the filtered queryset
+        random_player = random.choice(players)
+
+        # Set randomized to True for the selected player
+        random_player.randomized = True
+        random_player.save()
+
+        # Serialize the selected player data
+        serialized_data = PlayerSerializer(random_player)
+        return Response(serialized_data.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

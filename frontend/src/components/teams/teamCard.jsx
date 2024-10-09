@@ -77,4 +77,7 @@ TeamCard.propTypes = {
   isExpanded: PropTypes.bool.isRequired, // 'isExpanded' is a required boolean
 };
 
+
+
+
 export default TeamCard;

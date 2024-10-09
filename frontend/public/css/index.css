@@ -2,14 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'kanit';
-  src:
-    url('./fonts/kanit-bold-webfont.woff2') format('woff2'),
-    url('./fonts/kanit-bold-webfont.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-}
 
 @layer base {
   .font-outline-1 {
@@ -44,3 +36,12 @@
   font-weight: 600;
   font-style: normal;
 }
+
+  @font-face {
+    font-family: 'kanit';
+    src:
+      url('./fonts/kanit-bold-webfont.woff2') format('woff2'),
+      url('./fonts/kanit-bold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+  }

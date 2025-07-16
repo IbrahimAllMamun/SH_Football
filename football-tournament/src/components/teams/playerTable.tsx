@@ -1,0 +1,69 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { fetchTeamPlayer } from '@/lib/api';
+import { TeamPlayer } from '@/lib/database';
+
+interface PlayerTableProps {
+  id: number;
+  isExpanded: boolean;
+}
+
+const PlayerTable = ({ id, isExpanded }: PlayerTableProps) => {
+  const [teamPlayers, setTeamPlayers] = useState<TeamPlayer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadPlayers = async () => {
+      setLoading(true);
+      try {
+        const result = await fetchTeamPlayer(id);
+        setTeamPlayers(result);
+      } catch (error) {
+        console.error('Error fetching players:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPlayers();
+  }, [id]);
+
+  if (loading) return <div>Loading...</div>;
+
+  return (
+    <div
+      className={`fixed top-10 p-5 w-[45vw] z-10 h-[90vh] border scale-105 rounded-xl shadow-md bg-white transition-all duration-400 
+      ${isExpanded ? 'right-10' : '-right-96'}`}
+    >
+      <div className="overflow-hidden h-full m-5 font-medium">
+        <table className="table-auto w-full text-left">
+          <thead>
+            <tr className="border-b">
+              <th className="py-2 px-4">SL</th>
+              <th className="py-2 px-4">Name</th>
+              <th className="py-2 px-4">Department</th>
+              <th className="py-2 px-4">Session</th>
+              <th className="py-2 px-4">Position</th>
+              <th className="py-2 px-4">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {teamPlayers.map((teamPlayer) => (
+              <tr key={teamPlayer.player.SL} className="border-b hover:bg-gray-50 transition-all duration-200">
+                <td className="py-2 px-4">{teamPlayer.player.SL}</td>
+                <td className="py-2 px-4">{teamPlayer.player.name}</td>
+                <td className="py-2 px-4">{teamPlayer.player.department}</td>
+                <td className="py-2 px-4">{teamPlayer.player.session}</td>
+                <td className="py-2 px-4">{teamPlayer.player.playingPosition}</td>
+                <td className="py-2 px-4">${teamPlayer.price}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default PlayerTable;

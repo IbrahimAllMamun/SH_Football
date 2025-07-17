@@ -44,7 +44,7 @@ const SearchModal = ({ isVisible, setIsVisible, players, onSelectPlayer }: Searc
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-lg flex items-center justify-center z-50">
+    <div>
       
     </div>
   );

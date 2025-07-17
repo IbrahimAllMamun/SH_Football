@@ -74,7 +74,6 @@ const NavigationCard = ({ isVisible, setIsVisible }: NavigationCardProps) => {
             <kbd className="px-2 py-1 bg-white/20 rounded text-xs">Alt</kbd> + 
             <kbd className="px-2 py-1 bg-white/20 rounded text-xs">Space</kbd> to toggle
           </p>
-
         </div>
       </div>
     </div>

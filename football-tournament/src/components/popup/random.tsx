@@ -26,18 +26,18 @@ const RandomPlayer = ({ isVisible, setIsVisible, playerSL }: RandomPlayerProps) 
     };
   }, [setIsVisible]);
 
-  // Auto-hide the card after 2 seconds when it becomes visible
+  // Auto-hide the card after 3 seconds when it becomes visible
   useEffect(() => {
     if (isVisible) {
       const timer = setTimeout(() => {
         setIsVisible(false);
-      }, 2000);
+      }, 3000);
 
       return () => clearTimeout(timer);
     }
   }, [isVisible, setIsVisible]);
 
-  // Animation effect to display random numbers for 1 second before showing the actual playerSL
+  // Animation effect to display random numbers for 1.5 seconds before showing the actual playerSL
   useEffect(() => {
     if (isVisible) {
       let interval: NodeJS.Timeout;
@@ -45,12 +45,12 @@ const RandomPlayer = ({ isVisible, setIsVisible, playerSL }: RandomPlayerProps) 
       const animateSL = () => {
         interval = setInterval(() => {
           setDisplayedSL(Math.floor(Math.random() * 100) + 1);
-        }, 100);
+        }, 80);
 
         setTimeout(() => {
           clearInterval(interval);
           setDisplayedSL(playerSL);
-        }, 1000);
+        }, 1500);
       };
 
       animateSL();
@@ -60,15 +60,35 @@ const RandomPlayer = ({ isVisible, setIsVisible, playerSL }: RandomPlayerProps) 
 
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-lg z-50 
+      className={`fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-lg z-50 
       transition-all duration-300 ${isVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
       <div
         ref={cardRef}
-        className="flex font-bold text-[20rem] text-white flex-col items-center"
+        className={`transform transition-all duration-500 ${isVisible ? 'scale-100' : 'scale-90'}`}
       >
-        <div className="flex items-center">
-          <span>{displayedSL}</span>
+        <div className="text-center">
+          <div className="relative">
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 rounded-3xl blur-2xl opacity-75 animate-pulse"></div>
+            
+            {/* Main number display */}
+            <div className="relative glass-effect border-4 border-white/30 rounded-3xl p-12 shadow-2xl">
+              <div className="text-[15rem] lg:text-[20rem] font-bold text-white drop-shadow-2xl font-kanit">
+                {displayedSL}
+              </div>
+            </div>
+          </div>
+          
+          <div className="mt-8 text-white/80 text-xl font-medium">
+            <p>Random Player Selected</p>
+            <div className="flex justify-center space-x-2 mt-2 text-sm">
+              <kbd className="px-2 py-1 bg-white/20 rounded">Ctrl</kbd>
+              <kbd className="px-2 py-1 bg-white/20 rounded">Alt</kbd>
+              <kbd className="px-2 py-1 bg-white/20 rounded">R</kbd>
+              <span className="text-white/60">for new random</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

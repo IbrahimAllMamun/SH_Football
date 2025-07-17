@@ -13,8 +13,7 @@ interface SearchModalProps {
 const SearchModal = ({ isVisible, setIsVisible, players, onSelectPlayer }: SearchModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState('');
-  
-  // Close modal when clicking outside
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -30,12 +29,10 @@ const SearchModal = ({ isVisible, setIsVisible, players, onSelectPlayer }: Searc
     };
   }, [isVisible, setIsVisible]);
 
-  // Filter players by name (case insensitive)
-  const filteredPlayers = players.filter(player =>
+  const filteredPlayers = players.filter((player) =>
     player.name.toLowerCase().includes(query.toLowerCase())
   );
 
-  // Select a player and close modal
   const handleSelect = (player: Player) => {
     onSelectPlayer(player);
     setIsVisible(false);

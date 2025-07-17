@@ -47,31 +47,55 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.ctrlKey && event.altKey && event.code === 'Space') {
-        event.preventDefault();
-        setNavVisible(prev => !prev);
-      } else if (event.ctrlKey && event.altKey && event.code === 'KeyR') {
-        event.preventDefault();
-        setRanVisible(prev => !prev);
-        const loadRandomPlayer = async () => {
-          setLoadingRandomPlayer(true);
-          try {
-            const result = await fetchRandomPlayer();
-            setPlayer(result);
-          } catch (error) {
-            console.error('Error fetching random player:', error);
-          } finally {
-            setLoadingRandomPlayer(false);
-          }
-        };
-        loadRandomPlayer();
-      }
-    };
+  const handleKeyPress = (event: KeyboardEvent) => {
+    if (event.ctrlKey && !event.altKey && event.code === 'Space') {
+      // Ctrl + Space (no Alt)
+      event.preventDefault();
+      setSearchVisible((prev) => {
+        if (!prev) {
+          setNavVisible(false);
+          setRanVisible(false);
+        }
+        return !prev;
+      });
+    } else if (event.ctrlKey && event.altKey && event.code === 'Space') {
+      // Ctrl + Alt + Space
+      event.preventDefault();
+      setNavVisible((prev) => {
+        if (!prev) {
+          setSearchVisible(false);
+          setRanVisible(false);
+        }
+        return !prev;
+      });
+    } else if (event.ctrlKey && event.altKey && event.code === 'KeyR') {
+      // Ctrl + Alt + R
+      event.preventDefault();
+      setRanVisible((prev) => {
+        if (!prev) {
+          setNavVisible(false);
+          setSearchVisible(false);
+          (async () => {
+            setLoadingRandomPlayer(true);
+            try {
+              const result = await fetchRandomPlayer();
+              setPlayer(result);
+            } catch (error) {
+              console.error('Error fetching random player:', error);
+            } finally {
+              setLoadingRandomPlayer(false);
+            }
+          })();
+        }
+        return !prev;
+      });
+    }
+  };
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, []);
+  window.addEventListener('keydown', handleKeyPress);
+  return () => window.removeEventListener('keydown', handleKeyPress);
+}, []);
+
 
   const initialSL = player?.SL || (players.length > 0 ? players[0].SL : 1);
 

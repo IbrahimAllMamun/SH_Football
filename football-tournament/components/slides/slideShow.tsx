@@ -1,53 +1,114 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import { fetchPlayers, fetchRandomPlayer } from '@/lib/api';
+import Slideshow from '@/components/slides/slideShow';
 import { Player } from '@/lib/database';
-import { useEffect, useState } from 'react';
 
-interface SlideShowProps {
-  players: Player[];
-  currentPlayer: Player | null;
-}
+const NavigationCard = dynamic(() => import('@/components/popup/navigationCard'), { ssr: false });
+const SearchModal = dynamic(() => import('@/components/popup/searchModal'), { ssr: false });
+const RandomPlayer = dynamic(() => import('@/components/popup/random'), { ssr: false });
 
-const SlideShow = ({ players, currentPlayer }: SlideShowProps) => {
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  useEffect(() => {
-    if (currentPlayer) {
-      const index = players.findIndex(p => p.SL === currentPlayer.SL);
-      if (index !== -1) {
-        setActiveIndex(index);
-      }
-    }
-  }, [currentPlayer, players]);
+export default function Home() {
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [player, setPlayer] = useState<Player | null>(null);
+  const [loadingPlayers, setLoadingPlayers] = useState(true);
+  const [loadingRandomPlayer, setLoadingRandomPlayer] = useState(false);
+  const [isNavVisible, setNavVisible] = useState(false);
+  const [isSearchVisible, setSearchVisible] = useState(false);
+  const [isRanVisible, setRanVisible] = useState(false);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') {
-        setActiveIndex((prev) => (prev + 1 < players.length ? prev + 1 : prev));
-      } else if (e.key === 'ArrowLeft') {
-        setActiveIndex((prev) => (prev - 1 >= 0 ? prev - 1 : prev));
+    const loadPlayers = async () => {
+      setLoadingPlayers(true);
+      try {
+        const result = await fetchPlayers();
+        setPlayers(result);
+      } catch (error) {
+        console.error('Error fetching players:', error);
+      } finally {
+        setLoadingPlayers(false);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [players.length]);
+    loadPlayers();
+  }, []);
 
-  if (players.length === 0) return <div className="text-center">No players found</div>;
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.ctrlKey && !event.altKey && event.code === 'Space') {
+        event.preventDefault();
+        setSearchVisible((prev) => {
+          if (!prev) {
+            setNavVisible(false);
+            setRanVisible(false);
+          }
+          return !prev;
+        });
+      } else if (event.ctrlKey && event.altKey && event.code === 'Space') {
+        event.preventDefault();
+        setNavVisible((prev) => {
+          if (!prev) {
+            setSearchVisible(false);
+            setRanVisible(false);
+          }
+          return !prev;
+        });
+      } else if (event.ctrlKey && event.altKey && event.code === 'KeyR') {
+        event.preventDefault();
+        setRanVisible((prev) => {
+          if (!prev) {
+            setNavVisible(false);
+            setSearchVisible(false);
+            (async () => {
+              setLoadingRandomPlayer(true);
+              try {
+                const result = await fetchRandomPlayer();
+                setPlayer(result);
+              } catch (error) {
+                console.error('Error fetching random player:', error);
+              } finally {
+                setLoadingRandomPlayer(false);
+              }
+            })();
+          }
+          return !prev;
+        });
+      }
+    };
 
-  const player = players[activeIndex];
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
+
+  const initialSL = player?.SL || (players.length > 0 ? players[0].SL : 1);
+  const [selectedSL, setSelectedSL] = useState<number>(initialSL);
+
+  const handleSelectPlayer = (selectedPlayer: Player) => {
+    setSelectedSL(selectedPlayer.SL);
+    setPlayer(selectedPlayer);
+    setSearchVisible(false);
+  };
+
+  if (loadingPlayers || (isRanVisible && loadingRandomPlayer)) {
+    return (
+      <div className="fixed top-0 left-0 bg-[url('/bg.jpg')] bg-cover bg-bottom w-screen h-screen">
+        <div className="absolute top-10 left-10 z-50">Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-xl mx-auto mt-10 px-6">
-      <div className="rounded-xl bg-white shadow-lg p-6 text-center">
-        <h2 className="text-2xl font-semibold mb-4">Player SL: {player.SL}</h2>
-        <p className="text-lg font-medium">Name: {player.name}</p>
-        {/* Add more fields here as needed */}
-        <div className="mt-4 text-sm text-gray-500">
-          Slide {activeIndex + 1} of {players.length}
-        </div>
-      </div>
+    <div className="fixed top-0 left-0 bg-[url('/bg.jpg')] bg-cover bg-bottom w-screen h-screen">
+      <NavigationCard isVisible={isNavVisible} setIsVisible={setNavVisible} />
+      <SearchModal
+        isVisible={isSearchVisible}
+        setIsVisible={setSearchVisible}
+        players={players}
+        onSelectPlayer={handleSelectPlayer}
+      />
+      <RandomPlayer isVisible={isRanVisible} setIsVisible={setRanVisible} playerSL={player?.SL || 0} />
+      <Slideshow initialSL={initialSL} totalPlayers={players.length} playerSL={selectedSL} />
     </div>
   );
-};
-
-export default SlideShow;
+}

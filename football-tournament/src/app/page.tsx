@@ -1,11 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { fetchPlayers, fetchRandomPlayer } from '@/lib/api';
 import Slideshow from '@/components/slides/slideShow';
-import NavigationCard from '@/components/popup/navigationCard';
-import RandomPlayer from '@/components/popup/random';
 import { Player } from '@/lib/database';
+
+// Dynamically import client-only components to prevent hydration mismatch
+const NavigationCard = dynamic(() => import('@/components/popup/navigationCard'), {
+  ssr: false
+});
+
+const RandomPlayer = dynamic(() => import('@/components/popup/random'), {
+  ssr: false
+});
 
 export default function Home() {
   const [players, setPlayers] = useState<Player[]>([]);

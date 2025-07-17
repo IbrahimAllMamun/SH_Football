@@ -1,13 +1,3 @@
-// // app/page.tsx
-// export default function Home() {
-//   return (
-//     <main className="min-h-screen flex items-center justify-center text-3xl">
-//       Hello World!
-//     </main>
-//   );
-// }
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -26,10 +16,12 @@ export default function Home() {
   const [player, setPlayer] = useState<Player | null>(null);
   const [loadingPlayers, setLoadingPlayers] = useState(true);
   const [loadingRandomPlayer, setLoadingRandomPlayer] = useState(false);
+
   const [isNavVisible, setNavVisible] = useState(false);
   const [isSearchVisible, setSearchVisible] = useState(false);
   const [isRanVisible, setRanVisible] = useState(false);
 
+  // Load players once on mount
   useEffect(() => {
     const loadPlayers = async () => {
       setLoadingPlayers(true);
@@ -42,76 +34,77 @@ export default function Home() {
         setLoadingPlayers(false);
       }
     };
-
     loadPlayers();
   }, []);
 
+  // Keyboard shortcuts
   useEffect(() => {
-  const handleKeyPress = (event: KeyboardEvent) => {
-    if (event.ctrlKey && !event.altKey && event.code === 'Space') {
-      // Ctrl + Space (no Alt)
-      event.preventDefault();
-      setSearchVisible((prev) => {
-        if (!prev) {
-          setNavVisible(false);
-          setRanVisible(false);
-        }
-        return !prev;
-      });
-    } else if (event.ctrlKey && event.altKey && event.code === 'Space') {
-      // Ctrl + Alt + Space
-      event.preventDefault();
-      setNavVisible((prev) => {
-        if (!prev) {
-          setSearchVisible(false);
-          setRanVisible(false);
-        }
-        return !prev;
-      });
-    } else if (event.ctrlKey && event.altKey && event.code === 'KeyR') {
-      // Ctrl + Alt + R
-      event.preventDefault();
-      setRanVisible((prev) => {
-        if (!prev) {
-          setNavVisible(false);
-          setSearchVisible(false);
-          (async () => {
-            setLoadingRandomPlayer(true);
-            try {
-              const result = await fetchRandomPlayer();
-              setPlayer(result);
-            } catch (error) {
-              console.error('Error fetching random player:', error);
-            } finally {
-              setLoadingRandomPlayer(false);
-            }
-          })();
-        }
-        return !prev;
-      });
-    }
-  };
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.ctrlKey && !event.altKey && event.code === 'Space') {
+        // Ctrl + Space (Search modal)
+        event.preventDefault();
+        setSearchVisible((prev) => {
+          if (!prev) {
+            setNavVisible(false);
+            setRanVisible(false);
+          }
+          return !prev;
+        });
+      } else if (event.ctrlKey && event.altKey && event.code === 'Space') {
+        // Ctrl + Alt + Space (Navigation modal)
+        event.preventDefault();
+        setNavVisible((prev) => {
+          if (!prev) {
+            setSearchVisible(false);
+            setRanVisible(false);
+          }
+          return !prev;
+        });
+      } else if (event.ctrlKey && event.altKey && event.code === 'KeyR') {
+        // Ctrl + Alt + R (Random player modal)
+        event.preventDefault();
+        setRanVisible((prev) => {
+          if (!prev) {
+            setNavVisible(false);
+            setSearchVisible(false);
+            // Load random player
+            (async () => {
+              setLoadingRandomPlayer(true);
+              try {
+                const result = await fetchRandomPlayer();
+                setPlayer(result);
+              } catch (error) {
+                console.error('Error fetching random player:', error);
+              } finally {
+                setLoadingRandomPlayer(false);
+              }
+            })();
+          }
+          return !prev;
+        });
+      }
+    };
 
-  window.addEventListener('keydown', handleKeyPress);
-  return () => window.removeEventListener('keydown', handleKeyPress);
-}, []);
-
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   const initialSL = player?.SL || (players.length > 0 ? players[0].SL : 1);
 
+  // Handle loading UI
   if (loadingPlayers || (isRanVisible && loadingRandomPlayer)) {
     return (
       <div className="fixed top-0 left-0 bg-[url('/bg.jpg')] bg-cover bg-bottom w-screen h-screen">
-        <div className="absolute top-10 left-10 z-50">Loading...</div>
+        <div className="absolute top-10 left-10 z-50 text-white font-semibold">Loading...</div>
       </div>
     );
   }
 
   const handleSelectPlayer = (selectedPlayer: Player) => {
-  setPlayer(selectedPlayer);
-  setSearchVisible(false);
+    setPlayer(selectedPlayer);
+    setSearchVisible(false);
   };
-  
+
   return (
     <div className="fixed top-0 left-0 bg-[url('/bg.jpg')] bg-cover bg-bottom w-screen h-screen">
       <NavigationCard isVisible={isNavVisible} setIsVisible={setNavVisible} />

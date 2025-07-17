@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Player } from '@/lib/database';
 
 interface SearchModalProps {
@@ -11,74 +11,56 @@ interface SearchModalProps {
 }
 
 const SearchModal = ({ isVisible, setIsVisible, players, onSelectPlayer }: SearchModalProps) => {
+  const [slQuery, setSlQuery] = useState('');
   const modalRef = useRef<HTMLDivElement>(null);
-  const [query, setQuery] = useState('');
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
         setIsVisible(false);
-        setQuery('');
+        setSlQuery('');
       }
     };
-
-    if (isVisible) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    if (isVisible) document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, [isVisible, setIsVisible]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Allow only digits
-    if (/^\d*$/.test(value)) {
-      setQuery(value);
+  const handleSearch = () => {
+    const match = players.find(p => p.SL.toString() === slQuery.trim());
+    if (match) {
+      onSelectPlayer(match);
+      setIsVisible(false);
+      setSlQuery('');
     }
   };
 
-  const matchedPlayer = players.find((player) => player.SL === Number(query));
-
-  const handleSelect = () => {
-    if (matchedPlayer) {
-      onSelectPlayer(matchedPlayer);
-      setIsVisible(false);
-      setQuery('');
-    }
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSearch();
   };
 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-lg flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div
         ref={modalRef}
-        className="bg-white rounded-xl p-6 w-[400px] max-h-[80vh] overflow-y-auto shadow-lg"
+        className="bg-white rounded-xl shadow-xl p-6 w-96"
       >
         <input
-          type="text"
-          placeholder="Enter player SL (number)..."
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-          value={query}
-          onChange={handleChange}
+          type="number"
+          placeholder="Enter SL number"
+          value={slQuery}
+          onChange={(e) => setSlQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="w-full p-3 border border-gray-300 rounded mb-4"
           autoFocus
         />
-
-        {query !== '' && (
-          <>
-            {matchedPlayer ? (
-              <div
-                className="p-2 cursor-pointer hover:bg-blue-100 rounded text-center"
-                onClick={handleSelect}
-              >
-                {matchedPlayer.name} (SL: {matchedPlayer.SL})
-              </div>
-            ) : (
-              <div className="text-gray-500 text-center">No player found with SL {query}.</div>
-            )}
-          </>
-        )}
+        <button
+          onClick={handleSearch}
+          className="w-full bg-blue-600 text-white rounded py-2 hover:bg-blue-700"
+        >
+          Search Player
+        </button>
       </div>
     </div>
   );

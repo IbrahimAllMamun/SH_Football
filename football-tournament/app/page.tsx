@@ -18,6 +18,7 @@ import { Player } from '@/lib/database';
 
 // Dynamically import popup components (client-only)
 const NavigationCard = dynamic(() => import('@/components/popup/navigationCard'), { ssr: false });
+const SearchModal = dynamic(() => import('@/components/popup/searchModal'), { ssr: false });
 const RandomPlayer = dynamic(() => import('@/components/popup/random'), { ssr: false });
 
 export default function Home() {
@@ -26,6 +27,7 @@ export default function Home() {
   const [loadingPlayers, setLoadingPlayers] = useState(true);
   const [loadingRandomPlayer, setLoadingRandomPlayer] = useState(false);
   const [isNavVisible, setNavVisible] = useState(false);
+  const [isSearchVisible, setSearchVisible] = useState(false);
   const [isRanVisible, setRanVisible] = useState(false);
 
   useEffect(() => {
@@ -84,6 +86,7 @@ export default function Home() {
   return (
     <div className="fixed top-0 left-0 bg-[url('/bg.jpg')] bg-cover bg-bottom w-screen h-screen">
       <NavigationCard isVisible={isNavVisible} setIsVisible={setNavVisible} />
+      <SearchModal isVisible={isSearchVisible} setIsVisible={setSearchVisible} onSearch={handleSearch} />
       <RandomPlayer isVisible={isRanVisible} setIsVisible={setRanVisible} playerSL={player?.SL || 0} />
       <Slideshow initialSL={initialSL} totalPlayers={players.length} />
     </div>

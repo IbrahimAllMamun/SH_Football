@@ -58,6 +58,7 @@ const RandomPlayer = ({ isVisible, setIsVisible, playerSL }: RandomPlayerProps) 
     }
   }, [isVisible, playerSL]);
 
+
   return (
     <div
       className={`fixed inset-0 flex items-center justify-center bg-black/70 backdrop-blur-lg z-50 
@@ -68,13 +69,13 @@ const RandomPlayer = ({ isVisible, setIsVisible, playerSL }: RandomPlayerProps) 
         className={`transform transition-all duration-500 ${isVisible ? 'scale-100' : 'scale-90'}`}
       >
         <div className="text-center">
-          <div className="relative">
+          <div className="relative w-[400px] h-[400px]">  {/* Fixed size here */}
             {/* Glow effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 rounded-3xl blur-2xl opacity-75 animate-pulse"></div>
             
             {/* Main number display */}
-            <div className="relative glass-effect border-4 border-white/30 rounded-3xl p-12 shadow-2xl">
-              <div className="text-[15rem] lg:text-[20rem] font-bold text-white drop-shadow-2xl font-kanit">
+            <div className="relative glass-effect border-4 border-white/30 rounded-3xl p-12 shadow-2xl flex items-center justify-center">
+              <div className="text-[10rem] lg:text-[15rem] font-bold text-white drop-shadow-2xl font-kanit select-none">
                 {displayedSL}
               </div>
             </div>
@@ -93,6 +94,3 @@ const RandomPlayer = ({ isVisible, setIsVisible, playerSL }: RandomPlayerProps) 
       </div>
     </div>
   );
-};
-
-export default RandomPlayer;

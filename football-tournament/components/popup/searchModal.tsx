@@ -14,6 +14,7 @@ const SearchModal = ({ isVisible, setIsVisible, players, onSelectPlayer }: Searc
   const modalRef = useRef<HTMLDivElement>(null);
   const [query, setQuery] = useState('');
 
+  // Close modal on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
@@ -29,8 +30,9 @@ const SearchModal = ({ isVisible, setIsVisible, players, onSelectPlayer }: Searc
     };
   }, [isVisible, setIsVisible]);
 
+  // Only filter by exact SL match (converted to number)
   const filteredPlayers = players.filter((player) =>
-    player.name.toLowerCase().includes(query.toLowerCase())
+    query === '' ? false : player.SL === Number(query)
   );
 
   const handleSelect = (player: Player) => {
@@ -48,8 +50,8 @@ const SearchModal = ({ isVisible, setIsVisible, players, onSelectPlayer }: Searc
         className="bg-white rounded-xl p-6 w-[400px] max-h-[80vh] overflow-y-auto shadow-lg"
       >
         <input
-          type="text"
-          placeholder="Search players..."
+          type="number"
+          placeholder="Enter SL number..."
           className="w-full p-2 border border-gray-300 rounded mb-4"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -57,7 +59,7 @@ const SearchModal = ({ isVisible, setIsVisible, players, onSelectPlayer }: Searc
         />
         <ul>
           {filteredPlayers.length === 0 && (
-            <li className="text-gray-500 text-center">No players found.</li>
+            <li className="text-gray-500 text-center">No player found.</li>
           )}
           {filteredPlayers.map((player) => (
             <li

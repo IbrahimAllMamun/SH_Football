@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import SlideShow from '@/components/slides/slideShow';
-import SearchModal from '@/components/popup/SearchModal';
+import SearchModal from '@/components/popup/searchModal';
 import { Player } from '@/lib/database';
 import players from '@/lib/players.json'; // or fetch from DB
 

@@ -45,33 +45,7 @@ const SearchModal = ({ isVisible, setIsVisible, players, onSelectPlayer }: Searc
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-lg flex items-center justify-center z-50">
-      <div
-        ref={modalRef}
-        className="bg-white rounded-xl p-6 w-[400px] max-h-[80vh] overflow-y-auto shadow-lg"
-      >
-        <input
-          type="number"
-          placeholder="Enter SL number..."
-          className="w-full p-2 border border-gray-300 rounded mb-4"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          autoFocus
-        />
-        <ul>
-          {filteredPlayers.length === 0 && (
-            <li className="text-gray-500 text-center">No player found.</li>
-          )}
-          {filteredPlayers.map((player) => (
-            <li
-              key={player.SL}
-              className="p-2 cursor-pointer hover:bg-blue-100 rounded"
-              onClick={() => handleSelect(player)}
-            >
-              {player.name} (SL: {player.SL})
-            </li>
-          ))}
-        </ul>
-      </div>
+      
     </div>
   );
 };

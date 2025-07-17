@@ -107,10 +107,20 @@ export default function Home() {
     );
   }
 
+  const handleSelectPlayer = (selectedPlayer: Player) => {
+  setPlayer(selectedPlayer);
+  setSearchVisible(false);
+  };
+  
   return (
     <div className="fixed top-0 left-0 bg-[url('/bg.jpg')] bg-cover bg-bottom w-screen h-screen">
       <NavigationCard isVisible={isNavVisible} setIsVisible={setNavVisible} />
-      <SearchModal isVisible={isSearchVisible} setIsVisible={setSearchVisible} onSearch={handleSearch} />
+      <SearchModal
+        isVisible={isSearchVisible}
+        setIsVisible={setSearchVisible}
+        players={players}
+        onSelectPlayer={handleSelectPlayer}
+      />
       <RandomPlayer isVisible={isRanVisible} setIsVisible={setRanVisible} playerSL={player?.SL || 0} />
       <Slideshow initialSL={initialSL} totalPlayers={players.length} />
     </div>

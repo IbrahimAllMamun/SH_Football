@@ -10,7 +10,7 @@
 
 'use client';
 
-import { useState,  } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { fetchPlayers, fetchRandomPlayer } from '@/lib/api';
 import Slideshow from '@/components/slides/slideShow';

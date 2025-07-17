@@ -69,7 +69,7 @@ const NavigationCard = ({ isVisible, setIsVisible }: NavigationCardProps) => {
         </div>
         
         <div className="text-center mt-6 text-white/60 text-sm">
-          <p>Press <kbd className="px-2 py-1 bg-white/20 rounded text-xs">Ctrl</kbd> + <kbd className="px-2 py-1 bg-white/20 rounded text-xs">Alt</kbd> + <kbd className="px-2 py-1 bg-white/20 rounded text-xs">Space</kbd> to toggle</p>
+          <p>Press <kbd className="px-2 py-1 bg-white/20 rounded text-xs">Ctrl</kbd> + <kbd className="px-2 py-1 bg-white/20 rounded text-xs">Alt</kbd> + <kbd className=\"px-2 py-1 bg-white/20 rounded text-xs">Space</kbd> to toggle</p>
         </div>
       </div>
     </div>

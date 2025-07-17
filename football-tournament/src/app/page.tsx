@@ -3,12 +3,12 @@
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { fetchPlayers, fetchRandomPlayer } from '@/lib/api';
+import Slideshow from '@/components/slides/slideShow';
 import { Player } from '@/lib/database';
 
-// Dynamically import client-only components
+// Dynamically import popup components (client-only)
 const NavigationCard = dynamic(() => import('@/components/popup/navigationCard'), { ssr: false });
 const RandomPlayer = dynamic(() => import('@/components/popup/random'), { ssr: false });
-const Slideshow = dynamic(() => import('@/components/slides/slideShow'), { ssr: false });
 
 export default function Home() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -18,7 +18,6 @@ export default function Home() {
   const [isNavVisible, setNavVisible] = useState(false);
   const [isRanVisible, setRanVisible] = useState(false);
 
-  // Fetch all players on mount
   useEffect(() => {
     const loadPlayers = async () => {
       setLoadingPlayers(true);
@@ -35,7 +34,6 @@ export default function Home() {
     loadPlayers();
   }, []);
 
-  // Keyboard shortcut handlers
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.altKey && event.code === 'Space') {
@@ -44,7 +42,6 @@ export default function Home() {
       } else if (event.ctrlKey && event.altKey && event.code === 'KeyR') {
         event.preventDefault();
         setRanVisible(prev => !prev);
-
         const loadRandomPlayer = async () => {
           setLoadingRandomPlayer(true);
           try {
@@ -56,7 +53,6 @@ export default function Home() {
             setLoadingRandomPlayer(false);
           }
         };
-
         loadRandomPlayer();
       }
     };
@@ -67,11 +63,10 @@ export default function Home() {
 
   const initialSL = player?.SL || (players.length > 0 ? players[0].SL : 1);
 
-  // Show loading screen if still loading
   if (loadingPlayers || (isRanVisible && loadingRandomPlayer)) {
     return (
       <div className="fixed top-0 left-0 bg-[url('/bg.jpg')] bg-cover bg-bottom w-screen h-screen">
-        <div className="absolute top-10 left-10 z-50 text-white text-xl">Loading...</div>
+        <div className="absolute top-10 left-10 z-50">Loading...</div>
       </div>
     );
   }
@@ -80,7 +75,7 @@ export default function Home() {
     <div className="fixed top-0 left-0 bg-[url('/bg.jpg')] bg-cover bg-bottom w-screen h-screen">
       <NavigationCard isVisible={isNavVisible} setIsVisible={setNavVisible} />
       <RandomPlayer isVisible={isRanVisible} setIsVisible={setRanVisible} playerSL={player?.SL || 0} />
-      <Slideshow key={initialSL} initialSL={initialSL} totalPlayers={players.length} />
+      <Slideshow initialSL={initialSL} totalPlayers={players.length} />
     </div>
   );
 }

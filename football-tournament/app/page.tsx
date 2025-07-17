@@ -6,6 +6,7 @@ import { fetchPlayers, fetchRandomPlayer } from '@/lib/api';
 import Slideshow from '@/components/slides/slideShow';
 import { Player } from '@/lib/database';
 
+// Dynamically import popup components (client-only)
 const NavigationCard = dynamic(() => import('@/components/popup/navigationCard'), { ssr: false });
 const SearchModal = dynamic(() => import('@/components/popup/searchModal'), { ssr: false });
 const RandomPlayer = dynamic(() => import('@/components/popup/random'), { ssr: false });
@@ -15,10 +16,12 @@ export default function Home() {
   const [player, setPlayer] = useState<Player | null>(null);
   const [loadingPlayers, setLoadingPlayers] = useState(true);
   const [loadingRandomPlayer, setLoadingRandomPlayer] = useState(false);
+
   const [isNavVisible, setNavVisible] = useState(false);
   const [isSearchVisible, setSearchVisible] = useState(false);
   const [isRanVisible, setRanVisible] = useState(false);
 
+  // Load players once on mount
   useEffect(() => {
     const loadPlayers = async () => {
       setLoadingPlayers(true);
@@ -34,9 +37,11 @@ export default function Home() {
     loadPlayers();
   }, []);
 
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.ctrlKey && !event.altKey && event.code === 'Space') {
+        // Ctrl + Space (Search modal)
         event.preventDefault();
         setSearchVisible((prev) => {
           if (!prev) {
@@ -46,6 +51,7 @@ export default function Home() {
           return !prev;
         });
       } else if (event.ctrlKey && event.altKey && event.code === 'Space') {
+        // Ctrl + Alt + Space (Navigation modal)
         event.preventDefault();
         setNavVisible((prev) => {
           if (!prev) {
@@ -55,11 +61,13 @@ export default function Home() {
           return !prev;
         });
       } else if (event.ctrlKey && event.altKey && event.code === 'KeyR') {
+        // Ctrl + Alt + R (Random player modal)
         event.preventDefault();
         setRanVisible((prev) => {
           if (!prev) {
             setNavVisible(false);
             setSearchVisible(false);
+            // Load random player
             (async () => {
               setLoadingRandomPlayer(true);
               try {
@@ -82,21 +90,20 @@ export default function Home() {
   }, []);
 
   const initialSL = player?.SL || (players.length > 0 ? players[0].SL : 1);
-  const [selectedSL, setSelectedSL] = useState<number>(initialSL);
 
-  const handleSelectPlayer = (selectedPlayer: Player) => {
-    setSelectedSL(selectedPlayer.SL);
-    setPlayer(selectedPlayer);
-    setSearchVisible(false);
-  };
-
+  // Handle loading UI
   if (loadingPlayers || (isRanVisible && loadingRandomPlayer)) {
     return (
       <div className="fixed top-0 left-0 bg-[url('/bg.jpg')] bg-cover bg-bottom w-screen h-screen">
-        <div className="absolute top-10 left-10 z-50">Loading...</div>
+        <div className="absolute top-10 left-10 z-50 text-white font-semibold">Loading...</div>
       </div>
     );
   }
+
+  const handleSelectPlayer = (selectedPlayer: Player) => {
+    setPlayer(selectedPlayer);
+    setSearchVisible(false);
+  };
 
   return (
     <div className="fixed top-0 left-0 bg-[url('/bg.jpg')] bg-cover bg-bottom w-screen h-screen">
@@ -108,7 +115,7 @@ export default function Home() {
         onSelectPlayer={handleSelectPlayer}
       />
       <RandomPlayer isVisible={isRanVisible} setIsVisible={setRanVisible} playerSL={player?.SL || 0} />
-      <Slideshow initialSL={initialSL} totalPlayers={players.length} playerSL={selectedSL} />
+      <Slideshow initialSL={initialSL} totalPlayers={players.length} />
     </div>
   );
 }
